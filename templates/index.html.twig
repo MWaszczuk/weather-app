@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="container">
+        <div class="row">
+            {% for type, flashes in app.session.flashbag.all %}
+                {% for flash in flashes %}
+                    <div class="alert alert-{{ type }}">
+                        {{ flash|trans }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            {{ form_start(forecastForm) }}
+
+            {{ form_row(forecastForm.city) }}
+            {{ form_row(forecastForm.country) }}
+            {{ form_row(forecastForm.submit) }}
+
+            {{ form_end(forecastForm) }}
+        </div>
+    </div>
+
+    {% if forecasts|length > 0 %}
+    <div class="container">
+        <div class="row">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Miasto</th>
+                    <th>Kraj</th>
+                    <th>Temperatura</th>
+                    <th>Czas</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for forecast in forecasts %}
+                    <tr>
+                        <td>{{ forecast.city }}</td>
+                        <td>{{ forecast.country|country_name('pl') }}</td>
+                        <td>{{ forecast.temperature|round(1) }}&#8451</td>
+                        <td>{{ forecast.createdAt|date('d.m.Y H:i') }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+{% endblock %}
