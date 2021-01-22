@@ -14,16 +14,15 @@ return new class extends DefaultDeployer
         ;
     }
 
-    // run some local or remote commands before the deployment is started
-    public function beforeStartingDeploy()
+    public function beforePreparing()
     {
-        // $this->runLocal('./vendor/bin/simple-phpunit');
+        $this->runRemote('cp {{ deploy_dir }}/repo/.env {{ project_dir }}/.env');
     }
 
-    // run some local or remote commands after the deployment is finished
     public function beforeFinishingDeploy()
     {
-        // $this->runRemote('{{ console_bin }} app:my-task-name');
-        // $this->runLocal('say "The deployment has finished."');
+        $this->runRemote('test -f {{ deploy_dir }}/shared/.env.local || touch {{ deploy_dir }}/shared/.env.local');
+        $this->runRemote('ln -s {{ deploy_dir }}/shared/.env.local {{ project_dir }}/.env.local');
+        $this->runRemote('./bin/console doctrine:migrations:migrate --no-interaction');
     }
 };
